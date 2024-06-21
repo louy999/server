@@ -5,6 +5,8 @@ import cors from 'cors'
 import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import path from 'path'
+import {Server} from 'socket.io'
+import {createServer} from 'http'
 
 //import files
 import config from './config'
@@ -15,11 +17,16 @@ import sendMail from './send_email/index'
 
 const app: Application = express()
 const port = config.port || 3000
-app.use(errorHandelMiddleware)
 
 app.use(morgan('common'))
 app.use(express.json())
 app.use(cookieParser())
+
+const httpServer = createServer(app)
+
+const io = new Server(httpServer, {
+	/* options */
+})
 
 app.use(
 	cors({
@@ -64,3 +71,5 @@ app.post('/ver', (req: Request, res: Response) => {
 app.listen(port, () => {
 	console.log(`server is start with port :${port}`)
 })
+
+app.use(errorHandelMiddleware)
