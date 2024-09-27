@@ -4,7 +4,7 @@ import path from 'path'
 
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		cb(null, './uploads/')
+		cb(null, './uploads/image')
 	},
 	filename: (req, file, cb) => {
 		cb(
@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
 	},
 })
 
-const upload = multer({
+const uploadImg = multer({
 	storage,
 	fileFilter: (req, file, cb) => {
 		// Allow only image files
@@ -25,6 +25,6 @@ const upload = multer({
 	},
 })
 
-// const upload = multer({storage})
+// const uploadImg = multer({storage})
 
-export default upload
+export default uploadImg
