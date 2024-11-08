@@ -6,7 +6,9 @@
 	"scripts": {
 		"start": "nodemon index.ts",
 		"mig-up": " db-migrate up",
-		"mig-down": " db-migrate reset"
+		"mig-down": " db-migrate reset",
+		"dev": "pm2 delete resalesa; pm2 start --name resalesa  'npx ts-node --transpile-only index.ts' --watch",
+		"dev:d": "pm2 delete resalesa;"
 	},
 	"author": "",
 	"license": "ISC",
@@ -26,6 +28,7 @@
 		"nodemailer": "^6.9.7",
 		"nodemon": "^3.0.2",
 		"pg": "^8.11.3",
+		"pm2": "^5.4.2",
 		"ts-node": "^10.9.1",
 		"typescript": "^5.3.2"
 	},
