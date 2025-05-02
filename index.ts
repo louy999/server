@@ -5,7 +5,8 @@ import cors from 'cors'
 import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import path from 'path'
-
+import {Server} from 'socket.io'
+import http from 'http'
 //import files
 import config from './config'
 import errorHandelMiddleware from './middleware/error.handel.middleware'
@@ -26,7 +27,7 @@ app.use(
 		credentials: true,
 		optionsSuccessStatus: 200,
 		methods: '*',
-		origin: ['http://localhost:3000', 'http://localhost:3001'],
+		origin: ['http://localhost:3000'],
 	})
 )
 
@@ -37,8 +38,11 @@ app.get('/healthz', (_req: Request, res: Response) => {
 	res.send({status: 'ok✌️'})
 })
 
-app.post('/upload', upload.single('image'), (req: any, res) => {
-	res.send(req.file.filename)
+app.post('/upload', upload.array('image', 10), (req: any, res) => {
+	const fileNames = (req.files as Express.Multer.File[]).map(
+		(file) => file.filename
+	)
+	res.send(fileNames)
 })
 app.post(
 	'/upload/file',
@@ -67,10 +71,26 @@ app.get('/file/:filename', (req, res) => {
 	})
 })
 app.post('/ver', (req: Request, res: Response) => {
-	sendMail(req.body.email, req.body.number), res.json({message: 'Email send'})
+	sendMail(req.body.email, req.body.username), res.json({message: 'Email send'})
 })
 
-app.listen(port, () => {
+const server = http.createServer(app)
+const io = new Server(server, {
+	cors: {
+		origin: ['http://localhost:3000', 'http://localhost:3001'],
+		methods: ['GET', 'POST'],
+	},
+})
+io.on('connection', (socket) => {
+	console.log('🔌 Connected socket id:', socket.id)
+	socket.on('add_request', () => {
+		io.emit('all_com')
+	})
+	socket.on('disconnect', () => {
+		console.log('🔌 Disconnected socket id:', socket.id)
+	})
+})
+server.listen(port, () => {
 	console.log(`server is start with port :${port}`)
 })
 
