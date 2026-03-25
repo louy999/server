@@ -71,7 +71,8 @@ app.get('/file/:filename', (req, res) => {
 	})
 })
 app.post('/ver', (req: Request, res: Response) => {
-	sendMail(req.body.email, req.body.username), res.json({message: 'Email send'})
+	;(sendMail(req.body.email, req.body.username),
+		res.json({message: 'Email send'}))
 })
 
 const server = http.createServer(app)
@@ -84,14 +85,18 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
 	console.log('🔌 Connected socket id:', socket.id)
 	socket.on('add_request', () => {
-		io.emit('all_com')
+		io.emit('all_requests')
 	})
 	socket.on('disconnect', () => {
 		console.log('🔌 Disconnected socket id:', socket.id)
 	})
 })
+app.use((req, res, next) => {
+	const error: any = new Error(`Not Found - ${req.originalUrl}`)
+	error.status = 404
+	next(error)
+})
+app.use(errorHandelMiddleware)
 server.listen(port, () => {
 	console.log(`server is start with port :${port}`)
 })
-
-app.use(errorHandelMiddleware)
