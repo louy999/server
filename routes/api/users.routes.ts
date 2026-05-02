@@ -60,12 +60,9 @@ routes.get('/username/:username', async (req: Request, res: Response, next) => {
 	}
 })
 //update user
-routes.patch('/:id', async (req: Request, res: Response, next) => {
+routes.patch('/', async (req: Request, res: Response, next) => {
 	try {
-		const user = await userModel.update(
-			req.params.id as unknown as string,
-			req.body
-		)
+		const user = await userModel.update(req.body)
 		res.json({
 			status: 'success',
 			data: user,
